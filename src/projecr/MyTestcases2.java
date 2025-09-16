@@ -1,10 +1,5 @@
 package projecr;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.Duration;
 import java.util.List;
 import java.util.Random;
@@ -19,10 +14,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-public class MyTestcases extends myData {
-Connection con;
-Statement stat;
-ResultSet rs;
+public class MyTestcases2 extends myData {
 
 	WebDriver driver = new EdgeDriver();
 
@@ -33,15 +25,14 @@ ResultSet rs;
 	String LogoutPage = "https://automationteststore.com/index.php?rt=account/logout";
 
 	@BeforeTest
-	public void mySetup() throws SQLException {
-con = DriverManager.getConnection("jdbc:mysql://localhost:3306/classicmodels","root","root");
+	public void mySetup() {
 		driver.get(myWebSite);
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
 
 	}
 
-	@Test(priority = 1, enabled = true)
+	@Test(priority = 1, enabled = false)
 	public void SignupTest() throws InterruptedException {
 
 		driver.navigate().to(SignupPage);
@@ -116,7 +107,7 @@ con = DriverManager.getConnection("jdbc:mysql://localhost:3306/classicmodels","r
 
 	}
 
-	@Test(priority = 2, enabled = true)
+	@Test(priority = 2, enabled = false)
 	public void LogoutTest() throws InterruptedException {
 
 		driver.navigate().to(LogoutPage);
@@ -125,7 +116,7 @@ con = DriverManager.getConnection("jdbc:mysql://localhost:3306/classicmodels","r
 		Assert.assertEquals(ActualLogoutMessage, TheLogoutMessage);
 	}
 
-	@Test(priority = 3, enabled = true)
+	@Test(priority = 3, enabled = false)
 
 	public void Login() throws InterruptedException {
 
@@ -158,45 +149,37 @@ con = DriverManager.getConnection("jdbc:mysql://localhost:3306/classicmodels","r
 	@Test(priority = 4)
 
 	public void AddItemToThecart() throws InterruptedException {
+
 		driver.navigate().to(myWebSite);
 
 		List<WebElement> AllItems = driver.findElements(By.className("prdocutname"));
+
 		int RandomIndexForTheItem = rand.nextInt(AllItems.size());
+
+		AllItems.get(9).click();
 
 		int maxAttempts = 10; // حد أقصى للمحاولات
 		int attempts = 0;
 
-		// أول اختيار عشوائي
-		AllItems.get(RandomIndexForTheItem).click();
+		while ((driver.getPageSource().contains("Out of Stock") || driver.getCurrentUrl().contains("product_id=116"))&& attempts < maxAttempts) {
 
-		// بينما المنتج Out of Stock
-		while ((driver.getPageSource().contains("Out of Stock") || driver.getCurrentUrl().contains("product_id=116"))
-				&& attempts < maxAttempts) {
-
-			System.out.println("Item out of stock, trying another one...");
 			driver.navigate().back();
+			List<WebElement> AlternativeItems = driver.findElements(By.className("prdocutname"));
+			int AlternativeItem = rand.nextInt(AlternativeItems.size());
 
-			// لازم نعيد تحميل القائمة بعد الرجوع
-			AllItems = driver.findElements(By.className("prdocutname"));
-//
-//	        // جرب عنصر عشوائي جديد 
-			//هو إنك بعد ما تعمل driver.navigate().back() لسه بتحاول تستخدم عناصر قديمة من الـ DOM. أي عنصر انوجد قبل ما ترجع بالصفحة ما رح يضل صالح.
-			RandomIndexForTheItem = rand.nextInt(AllItems.size());
-			AllItems.get(RandomIndexForTheItem).click();
-
+			AlternativeItems.get(15).click();
 			attempts++;
-		}
-
-		if (attempts == maxAttempts) {
-			System.out.println("No available items found after " + maxAttempts + " attempts.");
+			System.out.println("No available items found after " + maxAttempts
+					+" attempts.");
 			return; // نخرج من الميثود إذا ما لقى ولا منتج
+		
 		}
 
-		// لو لقى منتج متوفر → أضفه للسلة
-		WebElement addToCartButton = driver.findElement(By.cssSelector(".cart"));
-		addToCartButton.click();
+		WebElement AddToCartButton = driver.findElement(By.cssSelector(".cart"));
 
-		System.out.println("Item added successfully: " + driver.getCurrentUrl());
+		AddToCartButton.click();
+
+		System.out.println(driver.getCurrentUrl());
 	}
 
 	@AfterTest

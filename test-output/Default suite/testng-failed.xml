@@ -3,13 +3,13 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="projecr.MyTestcases">
+      <class name="projecr.MyTestcases2">
         <methods>
-          <include name="Login"/>
-          <include name="mySetup"/>
+          <include name="AddItemToThecart"/>
           <include name="AfterMyTest"/>
+          <include name="mySetup"/>
         </methods>
-      </class> <!-- projecr.MyTestcases -->
+      </class> <!-- projecr.MyTestcases2 -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
